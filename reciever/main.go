@@ -1,47 +1,19 @@
-/**package main
-
-import (
-	"fmt"
-	"os"
-	"syscall"
-	"time"
-)
-
-func main() {
-	fmt.Println("Reciving")
-	handle, _ := syscall.Socket(syscall.AF_INET, syscall.SOCK_RAW, 0x1)
-	f := os.NewFile(uintptr(handle), fmt.Sprintf("fd %d", handle))
-	for {
-		buf := make([]byte, 1024)
-		numRead, err := f.Read(buf)
-		if err != nil {
-			fmt.Println("OOOOO")
-			fmt.Println(err)
-		}
-		fmt.Println(numRead)
-		//fmt.Printf(" X\n", buf[:numRead])
-		time.Sleep(time.Second)
-	}
-}**/
-
 package main
 
 import (
 	"fmt"
-	"os"
-	"syscall"
+	"golang.org/x/sys/unix"
 )
 
 func main() {
-	fd, _ := syscall.Socket(syscall.AF_INET, syscall.SOCK_RAW, 0x1)
-	f := os.NewFile(uintptr(fd), fmt.Sprintf("fd %d", fd))
-
+	fd, error := unix.Socket(unix.AF_INET, unix.SOCK_RAW, unix.IPPROTO_ICMP)
+	if error != nil {
+		unix.Close(fd)
+		panic(error)
+	}
+	data := make([]byte, 1024)
 	for {
-		buf := make([]byte, 1024)
-		numRead, err := f.Read(buf)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Printf("% X\n", buf[:numRead])
+		unix.Recvfrom(fd, data, 0)
+		fmt.Println(data)
 	}
 }

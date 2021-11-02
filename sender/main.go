@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"golang.org/x/sys/unix"
 	"net"
-	"syscall"
 )
 
 type ipheader struct {
@@ -50,18 +50,18 @@ func main() {
 	copy(srcip[:], srcipb)
 	copy(dstip[:], dstipb)
 	//oxff is IPPROTO_RAW
-	handle, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_RAW, 0)
+	handle, err := unix.Socket(unix.AF_INET, unix.SOCK_RAW, unix.IPPROTO_RAW)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("err1")
 	}
 
-	err2 := syscall.SetsockoptInt(handle, syscall.IPPROTO_IP, 0x3, 1)
+	err2 := unix.SetsockoptInt(handle, unix.IPPROTO_IP, unix.IP_HDRINCL, 1)
 	if err2 != nil {
 		fmt.Println(err)
 		fmt.Println("err2Bitrch")
 	}
-	address := syscall.SockaddrInet4{
+	address := unix.SockaddrInet4{
 		Port: 0,
 		Addr: dstip,
 	}
@@ -70,7 +70,7 @@ func main() {
 
 	p := createPayLoad(srcip, dstip)
 
-	errs := syscall.Sendto(handle, p, 0, &address)
+	errs := unix.Sendto(handle, p, 0, &address)
 	if errs != nil {
 		fmt.Println(errs)
 		fmt.Println("ERRRROROROROOROR")
