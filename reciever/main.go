@@ -27,7 +27,7 @@ type CPHeader struct {
 }
 
 func main() {
-	fd, error := unix.Socket(unix.AF_INET, unix.SOCK_RAW, unix.IPPROTO_RAW)
+	fd, error := unix.Socket(unix.AF_INET, unix.SOCK_RAW, unix.IPPROTO_ICMP)
 	if error != nil {
 		unix.Close(fd)
 		panic(error)

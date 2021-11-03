@@ -53,13 +53,11 @@ func main() {
 	handle, err := unix.Socket(unix.AF_INET, unix.SOCK_RAW, unix.IPPROTO_RAW)
 	if err != nil {
 		fmt.Println(err)
-		fmt.Println("err1")
 	}
 
 	err2 := unix.SetsockoptInt(handle, unix.IPPROTO_IP, unix.IP_HDRINCL, 1)
 	if err2 != nil {
 		fmt.Println(err)
-		fmt.Println("err2Bitrch")
 	}
 	address := unix.SockaddrInet4{
 		Port: 0,
@@ -73,7 +71,6 @@ func main() {
 	errs := unix.Sendto(handle, p, 0, &address)
 	if errs != nil {
 		fmt.Println(errs)
-		fmt.Println("ERRRROROROROOROR")
 	}
 	for {
 
@@ -112,7 +109,7 @@ func createPayLoad(srcip [4]byte, dstip [4]byte) []byte {
 
 	extraData := CPHeader{
 		sndrage: 12,
-		zipcode: 20105,
+		zipcode: 69696,
 	}
 
 	err := binary.Write(&data, binary.BigEndian, &iphdr)
@@ -127,6 +124,9 @@ func createPayLoad(srcip [4]byte, dstip [4]byte) []byte {
 	if err2 != nil {
 		fmt.Println(err2)
 	}
+	fmt.Printf("%+v\n", iphdr)
+	fmt.Println("--------=")
+	fmt.Printf("%+v\n", extraData)
 	return data.Bytes()
 }
 
